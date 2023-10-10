@@ -12,29 +12,28 @@ Requirements:
 <details>
   <summary>Expand for <b>LOCAL DEV SETUP</b> instructions </summary>
 
+:warning: All command are run from the project root directory.
+
 ### After cloning this repo:
 
 - use `.env.example` template to create `.env` file
 - modify `.env` file with terraform user's credentials and other variables as needed
 - `make envkeys` - to export env keys from your local .env file (for local dev only)
-- `terraform init`
+- `make tf:init`
   :point_up: if having trouble with creds, try clearing everything with `unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_SECURITY_TOKEN` and re-check you have right key names and values before continuing with debugging the issue.
 
 ### Preparing to deploy:
 
-- `terraform fmt`
-- `terraform validate`
-- `terraform plan`
+- `make tf.validate`
+- `make tf.plan`
 
 ### Deployment
 
-- `terraform apply`
+- `make tf.apply`
 
 Tear Down
 
-- `terraform destroy`
-
-Lastly, if you want to deploy locally, copy `sample.tfvars` -> `terraform.tfvars`. Do **NOT** check in the latter!
+- `make tf.destroy`
 
 </details>
 
