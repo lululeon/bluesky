@@ -2,12 +2,7 @@ terraform {
   required_version = "1.6.0"
 
   backend "s3" {
-    # i.e. bucket name:
-    bucket         = var.s3bucket
-    key            = var.s3bucket_key
-    region         = var.region
-    encrypt        = true
-    dynamodb_table = var.dynamodb_table
+    encrypt = true
   }
 
   required_providers {

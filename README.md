@@ -15,10 +15,10 @@ Requirements:
 ### After cloning this repo:
 
 - use `.env.example` template to create `.env` file
-- If you wish to override the default values in `variables.tf`, make a copy of `.tfvars.example` -> `terraform.tfvars`. Do not check in the .tfvars file.
-- modify `.env` file with terraform user's credentials and other variables
+- modify `.env` file with terraform user's credentials and other variables as needed
 - `make envkeys` - to export env keys from your local .env file (for local dev only)
 - `terraform init`
+  :point_up: if having trouble with creds, try clearing everything with `unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_SECURITY_TOKEN` and re-check you have right key names and values before continuing with debugging the issue.
 
 ### Preparing to deploy:
 

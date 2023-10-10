@@ -1,3 +1,11 @@
 
-envkeys:
-	./utils/parse_env.sh
+# caveat: env keys without `$` chars presumed.
+include .env
+export $(shell sed 's/=.*//' .env)
+
+# use the backend config file because variables are not allowed in backend block
+tf.init:
+	terraform -chdir=terraform init -backend-config="bucket=${TFSTATE_BUCKET}" \
+	-backend-config="key=${TFSTATE_BUCKET_KEY}" \
+	-backend-config="dynamodb_table=${DBTABLE}" \
+	-backend-config="region=${TF_VAR_region}" 

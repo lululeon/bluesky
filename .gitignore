@@ -11,11 +11,10 @@ temp/
 
 ### terraform-related cruft ###
 **/.terraform/*
-*.tfstate
-*.tfstate.*
+**/*.tfvars
+**/*.tfstate
+**/*.tfstate.*
 crash.log
-.tfvars
-terraform.tfvars
 override.tf
 override.tf.json
 *_override.tf

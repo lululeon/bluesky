@@ -1,3 +1,0 @@
-# copy this file and rename to `terraform.tfvars`, and override variable values (see variables.tf) as needed
-prefix  = "bsky"
-project = "BlueSky"
