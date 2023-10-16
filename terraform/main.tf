@@ -18,7 +18,9 @@ provider "aws" {
 }
 
 locals {
-  prefix = var.prefix
+  prefix  = var.prefix
+  project = var.project
+  region  = var.region
 
   common_tags = {
     Project   = var.project

@@ -1,7 +1,7 @@
 
-# caveat: env keys without `$` chars presumed.
+# caveat: env keys without `$` chars presumed. Note: Make interprets '#' as start of comment for itself, so escape as `\#`whenever needed for shell script fragments. 
 include .env
-export $(shell sed 's/=.*//' .env)
+export $(shell grep -v '^\#' .env | sed 's/=.*//')
 
 # use the backend config file because variables are not allowed in backend block
 tf.init:
