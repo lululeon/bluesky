@@ -10,6 +10,12 @@ tf.init:
 	-backend-config="dynamodb_table=${TFSTATE_DYNAMODB}" \
 	-backend-config="region=${TF_VAR_region}" 
 
+tf.init.migrate:
+	terraform -chdir=terraform init -migrate-state -backend-config="bucket=${TFSTATE_BUCKET}" \
+	-backend-config="key=${TFSTATE_BUCKET_KEY}" \
+	-backend-config="dynamodb_table=${TFSTATE_DYNAMODB}" \
+	-backend-config="region=${TF_VAR_region}" 
+
 tf.validate:
 	terraform -chdir=terraform validate
 	
