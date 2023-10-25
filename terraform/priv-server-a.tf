@@ -58,6 +58,7 @@ resource "aws_network_interface" "ubuntu-nic-a" {
 resource "aws_instance" "ubuntu-a" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
+  key_name      = local.pubkey
 
   network_interface {
     network_interface_id = aws_network_interface.ubuntu-nic-a.id
