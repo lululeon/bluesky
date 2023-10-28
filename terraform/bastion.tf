@@ -7,15 +7,6 @@ data "aws_ami" "amazon_linux" {
   owners = ["amazon"]
 }
 
-# Policy that lets the EC2 service itself sts:AssumeRole, in order to set up the bastion with the right instance role, via aws_iam_policy_document
-# (not used)
-
-# Create and attach any other policies to the target role, via aws_iam_role_policy_attachment here:
-# (not used)
-
-# Create the instance profile via aws_iam_instance_profile (attached in aws_instance)
-# (not used)
-
 resource "aws_security_group" "bastion" {
   description = "control bastion network traffic"
   vpc_id      = aws_vpc.main.id
@@ -29,10 +20,9 @@ resource "aws_security_group" "bastion" {
   }
 
   egress {
-    protocol  = "tcp"
-    from_port = 22
-    to_port   = 22
-    # cidr_blocks = ["${local.own_ip}/32", "18.206.107.24/29"]
+    protocol    = "tcp"
+    from_port   = 22
+    to_port     = 22
     cidr_blocks = ["0.0.0.0/0"]
   }
 
