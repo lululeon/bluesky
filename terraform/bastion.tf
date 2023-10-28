@@ -29,10 +29,11 @@ resource "aws_security_group" "bastion" {
   }
 
   egress {
-    protocol    = "tcp"
-    from_port   = 22
-    to_port     = 22
-    cidr_blocks = ["${local.own_ip}/32", "18.206.107.24/29"]
+    protocol  = "tcp"
+    from_port = 22
+    to_port   = 22
+    # cidr_blocks = ["${local.own_ip}/32", "18.206.107.24/29"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = merge(
