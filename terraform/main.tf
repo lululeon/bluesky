@@ -17,8 +17,17 @@ provider "aws" {
   region = var.region
 }
 
+# for constraining access to own ip
+data "http" "ip" {
+  url = "https://ifconfig.me/ip"
+}
+
 locals {
-  prefix = var.prefix
+  prefix  = var.prefix
+  project = var.project
+  region  = var.region
+  pubkey  = var.bastion_keyname
+  own_ip  = data.http.ip.response_body
 
   common_tags = {
     Project   = var.project
