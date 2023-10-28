@@ -34,7 +34,6 @@ resource "aws_security_group" "bastion" {
 
 
 resource "aws_eip" "bastion" {
-  # this ip exists inside a vpc
   domain     = "vpc"
   depends_on = [aws_internet_gateway.main]
 
@@ -48,7 +47,6 @@ resource "aws_instance" "bastion" {
   ami           = data.aws_ami.amazon_linux.id
   instance_type = "t2.nano"
 
-  # iam_instance_profile = aws_iam_instance_profile.bastion.name
   key_name  = var.bastion_keyname
   subnet_id = aws_subnet.public_a.id
   vpc_security_group_ids = [
@@ -61,7 +59,6 @@ resource "aws_instance" "bastion" {
   )
 }
 
-# assign ip addr
 resource "aws_eip_association" "eip_assoc" {
   instance_id   = aws_instance.bastion.id
   allocation_id = aws_eip.bastion.id
