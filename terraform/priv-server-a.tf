@@ -1,21 +1,3 @@
-data "aws_ami" "ubuntu" {
-  most_recent = true
-
-  # from terraform docs example lookup
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
-  }
-
-  # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/virtualization_types.html
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["099720109477"] # Canonical (ubuntu)
-}
-
 
 # firewall
 resource "aws_security_group" "allow_ssh" {
@@ -41,32 +23,32 @@ resource "aws_security_group" "allow_ssh" {
 
   tags = merge(
     local.common_tags,
-    { "Name" = "${local.prefix}-allow-ssh-a" }
+    { "Name" = "${local.prefix}_allow_ssh_a" }
   )
 }
 
-resource "aws_network_interface" "ubuntu-nic-a" {
+resource "aws_network_interface" "ubuntu_nic_a" {
   subnet_id       = aws_subnet.private_a.id
   security_groups = [aws_security_group.allow_ssh.id]
 
   tags = merge(
     local.common_tags,
-    { "Name" = "${local.prefix}-ubuntu-nic-a" }
+    { "Name" = "${local.prefix}_ubuntu_nic_a" }
   )
 }
 
-resource "aws_instance" "ubuntu-a" {
+resource "aws_instance" "ubuntu_a" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t2.micro"
   key_name      = local.pubkey
 
   network_interface {
-    network_interface_id = aws_network_interface.ubuntu-nic-a.id
+    network_interface_id = aws_network_interface.ubuntu_nic_a.id
     device_index         = 0
   }
 
   tags = merge(
     local.common_tags,
-    { "Name" = "${local.prefix}-ubuntu-a" }
+    { "Name" = "${local.prefix}_ubuntu_a" }
   )
 }
