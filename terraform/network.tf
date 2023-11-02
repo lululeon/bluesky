@@ -31,59 +31,60 @@ resource "aws_internet_gateway" "main" {
 
 
 #########################################################################################################
-#                            Public Subnets
+#                            Public Subnet Resources
 #########################################################################################################
 
-###################################
-# ----------- A Subnet ------------
-###################################
+resource "aws_subnet" "public" {
+  count = local.num_public_subnets
 
-resource "aws_subnet" "public_a" {
-  # up to 254 hosts (always a number of addresses reserved by aws)
-  cidr_block = "10.1.1.0/24"
-
-  vpc_id = aws_vpc.main.id
+  cidr_block = local.public_cidrs[count.index]
+  vpc_id     = aws_vpc.main.id
 
   # as soon as anything is provisioned on this net, assign it a publicly reachable ip address
   map_public_ip_on_launch = true
 
-  availability_zone = "${data.aws_region.current.name}a"
+  availability_zone = "${data.aws_region.current.name}${local.zones[count.index]}"
 
   # wait for gw
   depends_on = [aws_internet_gateway.main]
 
   tags = merge(
     local.common_tags,
-    { "Name" = "${local.prefix}_public_a" }
+    { "Name" = "${local.prefix}_public_${local.zones[count.index]}" }
   )
 }
 
-resource "aws_route_table" "public_a" {
+resource "aws_route_table" "public" {
+  count  = local.num_public_subnets
   vpc_id = aws_vpc.main.id
 
   tags = merge(
     local.common_tags,
-    { "Name" = "${local.prefix}_public_a" }
+    { "Name" = "${local.prefix}_public_${local.zones[count.index]}" }
   )
 }
 
 # links the routing table created above to the subnet
-resource "aws_route_table_association" "public_a" {
-  subnet_id      = aws_subnet.public_a.id
-  route_table_id = aws_route_table.public_a.id
+resource "aws_route_table_association" "public" {
+  count          = local.num_public_subnets
+  subnet_id      = aws_subnet.public[count.index].id
+  route_table_id = aws_route_table.public[count.index].id
 }
 
 # add a route that makes everything in the subnet accessible to the internet
-resource "aws_route" "public_internet_access_a" {
-  route_table_id         = aws_route_table.public_a.id
+resource "aws_route" "public_internet_route" {
+  count                  = local.num_public_subnets
+  route_table_id         = aws_route_table.public[count.index].id
   gateway_id             = aws_internet_gateway.main.id
   destination_cidr_block = "0.0.0.0/0"
 }
 
 # Need a NAT gateway (egress only) for entities walled off
-# in our private subnet (not defined yet). The NAT gw must be in the *public* subnet.
-# It also needs an ip, so we need to first create one using elastic ip
-resource "aws_eip" "public_a" {
+# in our private subnet (not defined yet). Each NAT gw must be in a *public* subnet.
+# They also need an ip each, so we need to first create one using elastic ip
+resource "aws_eip" "public" {
+  count = local.num_public_subnets
+
   # this ip exists inside a vpc
   domain = "vpc"
 
@@ -92,166 +93,66 @@ resource "aws_eip" "public_a" {
 
   tags = merge(
     local.common_tags,
-    { "Name" = "${local.prefix}_public_a" }
+    { "Name" = "${local.prefix}_public_${local.zones[count.index]}" }
   )
 }
 
-resource "aws_nat_gateway" "public_a" {
-  allocation_id = aws_eip.public_a.id
-  subnet_id     = aws_subnet.public_a.id
+resource "aws_nat_gateway" "public" {
+  count         = local.num_public_subnets
+  allocation_id = aws_eip.public[count.index].id
+  subnet_id     = aws_subnet.public[count.index].id
 
   tags = merge(
     local.common_tags,
-    { "Name" = "${local.prefix}_public_a" }
+    { "Name" = "${local.prefix}_public_${local.zones[count.index]}" }
   )
 }
-
-###################################
-# ----------- B Subnet ------------
-###################################
-
-resource "aws_subnet" "public_b" {
-  cidr_block              = "10.1.2.0/24"
-  vpc_id                  = aws_vpc.main.id
-  map_public_ip_on_launch = true
-
-  availability_zone = "${data.aws_region.current.name}b"
-
-  depends_on = [aws_internet_gateway.main]
-
-  tags = merge(
-    local.common_tags,
-    { "Name" = "${local.prefix}_public_b" }
-  )
-}
-
-resource "aws_route_table" "public_b" {
-  vpc_id = aws_vpc.main.id
-
-  tags = merge(
-    local.common_tags,
-    { "Name" = "${local.prefix}_public_b" }
-  )
-}
-
-resource "aws_route_table_association" "public_b" {
-  subnet_id      = aws_subnet.public_b.id
-  route_table_id = aws_route_table.public_b.id
-}
-
-resource "aws_route" "public_internet_access_b" {
-  route_table_id         = aws_route_table.public_b.id
-  gateway_id             = aws_internet_gateway.main.id
-  destination_cidr_block = "0.0.0.0/0"
-}
-
-resource "aws_eip" "public_b" {
-  domain     = "vpc"
-  depends_on = [aws_internet_gateway.main]
-
-  tags = merge(
-    local.common_tags,
-    { "Name" = "${local.prefix}_public_b" }
-  )
-}
-
-resource "aws_nat_gateway" "public_b" {
-  allocation_id = aws_eip.public_b.id
-  subnet_id     = aws_subnet.public_b.id
-
-  tags = merge(
-    local.common_tags,
-    { "Name" = "${local.prefix}_public_b" }
-  )
-}
-
 
 
 #########################################################################################################
-#                            Private Subnets
+#                            Private Subnet Resources
 #########################################################################################################
-###################################
-# ------ Privat A Subnet ----------
-###################################
-resource "aws_subnet" "private_a" {
-  # our network might grow: leave 10.1 through 10.9 to extra public subnets.
-  cidr_block = "10.1.10.0/24"
+
+resource "aws_subnet" "private" {
+  count = local.num_private_subnets
+
+  cidr_block = local.private_cidrs[count.index]
 
   vpc_id = aws_vpc.main.id
 
-  availability_zone = "${data.aws_region.current.name}a"
+  availability_zone = "${data.aws_region.current.name}${local.zones[count.index]}"
 
   # wait for gw
   depends_on = [aws_internet_gateway.main]
 
   tags = merge(
     local.common_tags,
-    { "Name" = "${local.prefix}_private_a" }
+    { "Name" = "${local.prefix}_private_${local.zones[count.index]}" }
   )
 }
 
-resource "aws_route_table" "private_a" {
+resource "aws_route_table" "private" {
+  count  = local.num_private_subnets
   vpc_id = aws_vpc.main.id
 
   tags = merge(
     local.common_tags,
-    { "Name" = "${local.prefix}_private_a" }
+    { "Name" = "${local.prefix}_private_${local.zones[count.index]}" }
   )
 }
 
-resource "aws_route_table_association" "private_a" {
-  subnet_id      = aws_subnet.private_a.id
-  route_table_id = aws_route_table.private_a.id
+resource "aws_route_table_association" "private" {
+  count          = local.num_private_subnets
+  subnet_id      = aws_subnet.private[count.index].id
+  route_table_id = aws_route_table.private[count.index].id
 }
 
 # add the egress-only route that lets private subnet reach the internet:
-resource "aws_route" "private_a_internet_out" {
-  route_table_id = aws_route_table.private_a.id
+resource "aws_route" "private_internet_route" {
+  count          = local.num_private_subnets
+  route_table_id = aws_route_table.private[count.index].id
 
   # instead of an internet 'gateway_id' here, we specify the relevant NAT gateway instead:
-  nat_gateway_id         = aws_nat_gateway.public_a.id
-  destination_cidr_block = "0.0.0.0/0"
-}
-
-###################################
-# ------ Private B Subnet ---------
-###################################
-resource "aws_subnet" "private_b" {
-  # our network might grow: leave 10.1 through 10.9 to extra public subnets.
-  cidr_block = "10.1.11.0/24"
-
-  vpc_id = aws_vpc.main.id
-
-  availability_zone = "${data.aws_region.current.name}b"
-
-  # wait for gw
-  depends_on = [aws_internet_gateway.main]
-
-  tags = merge(
-    local.common_tags,
-    { "Name" = "${local.prefix}_private_b" }
-  )
-}
-
-resource "aws_route_table" "private_b" {
-  vpc_id = aws_vpc.main.id
-
-  tags = merge(
-    local.common_tags,
-    { "Name" = "${local.prefix}_private_b" }
-  )
-}
-
-resource "aws_route_table_association" "private_b" {
-  subnet_id      = aws_subnet.private_b.id
-  route_table_id = aws_route_table.private_b.id
-}
-
-# add the egress-only route that lets private subnet reach the internet:
-resource "aws_route" "private_b_internet_out" {
-  route_table_id = aws_route_table.private_b.id
-
-  # instead of an internet 'gateway_id' here, we specify the relevant NAT gateway instead:
-  nat_gateway_id         = aws_nat_gateway.public_b.id
+  nat_gateway_id         = aws_nat_gateway.public[count.index].id
   destination_cidr_block = "0.0.0.0/0"
 }

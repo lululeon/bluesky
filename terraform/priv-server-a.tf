@@ -28,7 +28,7 @@ resource "aws_security_group" "allow_ssh" {
 }
 
 resource "aws_network_interface" "ubuntu_nic_a" {
-  subnet_id       = aws_subnet.private_a.id
+  subnet_id       = aws_subnet.private[0].id
   security_groups = [aws_security_group.allow_ssh.id]
 
   tags = merge(
