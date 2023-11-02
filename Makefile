@@ -16,6 +16,9 @@ tf.init.migrate:
 	-backend-config="dynamodb_table=${TFSTATE_DYNAMODB}" \
 	-backend-config="region=${TF_VAR_region}" 
 
+tf.format:
+	terraform -chdir=terraform fmt
+	
 tf.validate:
 	terraform -chdir=terraform validate
 	

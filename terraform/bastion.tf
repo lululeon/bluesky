@@ -1,11 +1,3 @@
-data "aws_ami" "amazon_linux" {
-  most_recent = true
-  filter {
-    name   = "name"
-    values = ["amzn2-ami-hvm-2.0.*-x86_64-gp2"]
-  }
-  owners = ["amazon"]
-}
 
 resource "aws_security_group" "bastion" {
   description = "control bastion network traffic"
@@ -28,7 +20,7 @@ resource "aws_security_group" "bastion" {
 
   tags = merge(
     local.common_tags,
-    { "Name" = "${local.prefix}-bastion" }
+    { "Name" = "${local.prefix}_bastion" }
   )
 }
 
@@ -39,7 +31,7 @@ resource "aws_eip" "bastion" {
 
   tags = merge(
     local.common_tags,
-    { "Name" = "${local.prefix}-bastion" }
+    { "Name" = "${local.prefix}_bastion" }
   )
 }
 
@@ -55,7 +47,7 @@ resource "aws_instance" "bastion" {
 
   tags = merge(
     local.common_tags,
-    { "Name" = "${local.prefix}-bastion" }
+    { "Name" = "${local.prefix}_bastion" }
   )
 }
 

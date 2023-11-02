@@ -17,10 +17,6 @@ provider "aws" {
   region = var.region
 }
 
-# for constraining access to own ip
-data "http" "ip" {
-  url = "https://ifconfig.me/ip"
-}
 
 locals {
   prefix  = var.prefix
@@ -35,5 +31,3 @@ locals {
   }
 }
 
-# be able to get data about the current region
-data "aws_region" "current" {}
