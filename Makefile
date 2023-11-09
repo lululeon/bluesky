@@ -30,3 +30,7 @@ tf.apply:
 
 tf.destroy:
 	terraform -chdir=terraform destroy
+
+diagram:
+	python ./diagrams/vpc.py
+	mv ./aws_region_us-east-1.png ./diagrams/bluesky_vpc.png

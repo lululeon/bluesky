@@ -2,6 +2,8 @@
 
 This repo provisions a VPC with 2 public and 2 private subnets using an S3+Dynamodb Backend, with standard CIDRs, basic resource tagging and naming baked in for simplicity.
 
+![diagram of vpc](./diagrams/bluesky_vpc.png)
+
 Requirements:
 
 - an AWS account (a terraform user) that has the necessary permissions to build infra
