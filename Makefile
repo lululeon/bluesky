@@ -30,3 +30,7 @@ tf.apply:
 
 tf.destroy:
 	terraform -chdir=terraform destroy
+
+diagram:
+	python ./diagrams/vpc.py
+	mv *.png ./diagrams
