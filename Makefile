@@ -33,4 +33,4 @@ tf.destroy:
 
 diagram:
 	python ./diagrams/vpc.py
-	mv *.png ./diagrams
+	mv ./aws_region_us-east-1.png ./diagrams/bluesky_vpc.png

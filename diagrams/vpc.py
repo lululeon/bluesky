@@ -1,33 +1,38 @@
 from diagrams import Cluster, Diagram
 from diagrams.aws.compute import EC2
-from diagrams.aws.database import RDS
-from diagrams.aws.network import ELB
-from diagrams.aws.network import InternetGateway, NATGateway
-from diagrams.aws.network import PublicSubnet, PrivateSubnet
+from diagrams.aws.network import InternetGateway, NATGateway, RouteTable
 
-with Diagram("Bluesky VPC", show=False, direction="TB" ):
-    igw = InternetGateway("IGW")
-    with Cluster("VPC", direction="TB"):
-       
-        with Cluster("Public A", direction="LR"):
-            bastion = EC2("Bastion Host")
-            natgwA = NATGateway("NAT GW")
-            pub_a = [
-                bastion,
-                natgwA
-            ]
+with Diagram("AWS region us-east-1", show=False, direction="TB" ):
 
-        with Cluster("Public B", direction="LR"):
-            natgwB = NATGateway("NAT GW")
-            pub_b = [ natgwB ]
+    with Cluster("Bluesky VPC - 10.1.0.0/16", direction="TB" ):
+        igw = InternetGateway("IGW")
 
-        with Cluster("Private A", direction="LR"):
-            ubuntu = EC2("Ubuntu Server")
+        with Cluster("us-east-1a", direction="TB"):
+        
+            with Cluster("Public A", direction="LR"):
+                rtpubA = RouteTable("Route Table")
+                natgwA = NATGateway("NAT GW")
+                bastion = EC2("Bastion Host")
 
-        with Cluster("Private B", direction="LR"):
-            priv_b = PrivateSubnet("Private-B")
+            with Cluster("Private A", direction="LR"):
+                ubuntu = EC2("Ubuntu Server")
+                rtprivA = RouteTable("Route Table")
 
-    igw >> natgwA
-    igw >> natgwB
-    bastion >> ubuntu
-    pub_b >> priv_b
+        igw >> rtpubA
+
+        with Cluster("us-east-1b", direction="TB"):
+
+            with Cluster("Public B", direction="LR"):
+                rtpubB = RouteTable("Route Table")
+                natgwB = NATGateway("NAT GW")
+
+
+            with Cluster("Private B", direction="LR"):
+                rtprivB = RouteTable("Route Table")
+
+
+        igw >> rtpubB
+
+        bastion >> ubuntu
+        natgwA >> rtprivA
+        natgwB >> rtprivB
