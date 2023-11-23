@@ -39,7 +39,7 @@ resource "aws_instance" "bastion" {
   ami           = data.aws_ami.amazon_linux.id
   instance_type = "t2.nano"
 
-  key_name  = var.bastion_keyname
+  key_name  = local.pubkey
   subnet_id = aws_subnet.public[0].id
   vpc_security_group_ids = [
     aws_security_group.bastion.id
@@ -51,7 +51,7 @@ resource "aws_instance" "bastion" {
   )
 }
 
-resource "aws_eip_association" "eip_assoc" {
+resource "aws_eip_association" "eip_assoc_bastion" {
   instance_id   = aws_instance.bastion.id
   allocation_id = aws_eip.bastion.id
 }
