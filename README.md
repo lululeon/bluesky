@@ -2,6 +2,8 @@
 
 This repo provisions a VPC with 2 public and 2 private subnets using an S3+Dynamodb Backend, with standard CIDRs, basic resource tagging and naming baked in for simplicity.
 
+It will also let you launch a containerized service on the `web_server` instance's public ip: all you need to do is plug in your aws account and an ECR docker image name for rapid prototyping.
+
 ![diagram of vpc](./diagrams/bluesky_vpc.png)
 
 Requirements:

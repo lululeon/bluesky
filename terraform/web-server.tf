@@ -66,7 +66,10 @@ resource "aws_eip" "web_server" {
 resource "aws_iam_role" "web_server" {
   name               = "${local.prefix}_web_server"
   assume_role_policy = file("./files/webserver-assume-role.json")
-  tags               = local.common_tags
+  tags = merge(
+    local.common_tags,
+    { "Name" = "${local.prefix}_web_server" }
+  )
 }
 
 resource "aws_iam_role_policy_attachment" "web_server_attach_policy" {
@@ -74,10 +77,20 @@ resource "aws_iam_role_policy_attachment" "web_server_attach_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
+resource "aws_iam_instance_profile" "web_server" {
+  name = "${local.prefix}_web_server_instance_profile"
+  role = aws_iam_role.web_server.name
+  tags = merge(
+    local.common_tags,
+    { "Name" = "${local.prefix}_web_server" }
+  )
+}
+
 resource "aws_instance" "web_server" {
-  ami           = data.aws_ami.amazon_linux.id
-  instance_type = "t2.nano"
-  user_data     = templatefile("./files/userdata-webserver.tftpl", { region = local.region, accountnum = local.accountnum, image = local.image })
+  ami                  = data.aws_ami.amazon_linux.id
+  instance_type        = "t2.nano"
+  user_data            = templatefile("./files/userdata-webserver.tftpl", { region = local.region, accountnum = local.accountnum, image = local.image })
+  iam_instance_profile = aws_iam_instance_profile.web_server.name
 
   key_name  = local.pubkey
   subnet_id = aws_subnet.public[0].id
