@@ -14,7 +14,7 @@ terraform {
 }
 
 provider "aws" {
-  region = data.terraform_remote_state.layer1.subnet_id
+  region = data.terraform_remote_state.layer1.outputs.region
 }
 
 
