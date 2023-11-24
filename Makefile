@@ -1,35 +1,47 @@
+# stop telling me what you're gonna do and just do it! (Unless I say otherwise, haha).
+ifndef VERBOSE
+.SILENT:
+endif
 
 # caveat: env keys without `$` chars presumed. Note: Make interprets '#' as start of comment for itself, so escape as `\#`whenever needed for shell script fragments. 
 include .env
 export $(shell grep -v '^\#' .env | sed 's/=.*//')
 
+bucketKey=$(TFSTATE_BUCKET_KEY)
+layerDir=terraform
+
+ifdef layer
+bucketKey:= ${bucketKey}-layer${layer}
+layerDir := ${layerDir}/layer${layer}
+endif
+
 # use the backend config file because variables are not allowed in backend block
 tf.init:
-	terraform -chdir=terraform init -backend-config="bucket=${TFSTATE_BUCKET}" \
-	-backend-config="key=${TFSTATE_BUCKET_KEY}" \
+	terraform -chdir=${layerDir} init -backend-config="bucket=${TFSTATE_BUCKET}" \
+	-backend-config="key=${bucketKey}" \
 	-backend-config="dynamodb_table=${TFSTATE_DYNAMODB}" \
-	-backend-config="region=${TF_VAR_region}" 
+	-backend-config="region=${TF_VAR_region}"
 
 tf.init.migrate:
-	terraform -chdir=terraform init -migrate-state -backend-config="bucket=${TFSTATE_BUCKET}" \
-	-backend-config="key=${TFSTATE_BUCKET_KEY}" \
+	terraform -chdir=${layerDir} init -migrate-state -backend-config="bucket=${TFSTATE_BUCKET}" \
+	-backend-config="key=${bucketKey}" \
 	-backend-config="dynamodb_table=${TFSTATE_DYNAMODB}" \
 	-backend-config="region=${TF_VAR_region}" 
 
 tf.format:
-	terraform -chdir=terraform fmt
+	terraform -chdir=${layerDir} fmt
 	
 tf.validate:
-	terraform -chdir=terraform validate
-	
+	terraform -chdir=${layerDir} validate
+
 tf.plan:
-	terraform -chdir=terraform plan
+	terraform -chdir=${layerDir} plan
 
 tf.apply:
-	terraform -chdir=terraform apply
+	terraform -chdir=${layerDir} apply
 
 tf.destroy:
-	terraform -chdir=terraform destroy
+	terraform -chdir=${layerDir} destroy
 
 diagram:
 	python3 ./diagrams/vpc.py
