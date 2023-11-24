@@ -13,6 +13,7 @@ with Diagram("AWS region us-east-1", show=False, direction="TB" ):
                 rtpubA = RouteTable("Route Table")
                 natgwA = NATGateway("NAT GW")
                 bastion = EC2("Bastion Host")
+                webserver = EC2("Web or API server")
 
             with Cluster("Private A", direction="LR"):
                 ubuntu = EC2("Ubuntu Server")

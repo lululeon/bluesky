@@ -29,6 +29,8 @@ locals {
   zones               = var.az_suffixes
   num_public_subnets  = length(var.public_subnet_cidr_blocks)
   num_private_subnets = length(var.private_subnet_cidr_blocks)
+  accountnum          = var.accountnum
+  image               = var.image
   common_tags = {
     Project   = var.project
     ManagedBy = "Terraform"

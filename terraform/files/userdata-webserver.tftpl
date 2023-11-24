@@ -1,0 +1,19 @@
+#! /bin/bash
+
+# enable docker
+yum update -y
+amazon-linux-extras install -y docker
+systemctl enable docker.service
+systemctl start docker.service
+
+# add the standard ec2-user on ec2 instances to the docker user group so that it can run docker
+usermod -aG docker ec2-user
+
+# authenticate to ecr
+aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${accountnum}.dkr.ecr.${region}.amazonaws.com
+
+# pull the container from ecr to run
+docker pull ${accountnum}.dkr.ecr.${region}.amazonaws.com/${image}
+
+# run the container - when pulled from ecr, the full image name includes the ecr repo path!
+docker run -p 80:8080 -d ${accountnum}.dkr.ecr.${region}.amazonaws.com/${image}
