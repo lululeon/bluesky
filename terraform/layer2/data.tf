@@ -25,11 +25,12 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical (ubuntu)
 }
 
-# for constraining access to own ip
-data "http" "ip" {
-  url = "https://ifconfig.me/ip"
+data "terraform_remote_state" "layer1" {
+  backend = "s3"
+  config = {
+    encrypt = true
+    key     = local.bucket_key
+    bucket  = local.bucket
+    region  = local.region
+  }
 }
-
-# be able to get data about the current region
-data "aws_region" "current" {}
-

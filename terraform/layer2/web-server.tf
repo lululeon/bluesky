@@ -1,7 +1,7 @@
 
 resource "aws_security_group" "web_server" {
   description = "control web_server network traffic"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = data.terraform_remote_state.layer1.outputs.vpc_id
 
   ingress {
     protocol  = "tcp"
@@ -54,8 +54,7 @@ resource "aws_security_group" "web_server" {
 
 
 resource "aws_eip" "web_server" {
-  domain     = "vpc"
-  depends_on = [aws_internet_gateway.main]
+  domain = "vpc"
 
   tags = merge(
     local.common_tags,
@@ -93,7 +92,7 @@ resource "aws_instance" "web_server" {
   iam_instance_profile = aws_iam_instance_profile.web_server.name
 
   key_name  = local.pubkey
-  subnet_id = aws_subnet.public[0].id
+  subnet_id = data.terraform_remote_state.layer1.outputs.public_subnet0_id
   vpc_security_group_ids = [
     aws_security_group.web_server.id
   ]
