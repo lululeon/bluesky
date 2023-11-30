@@ -27,7 +27,6 @@ resource "aws_security_group" "bastion" {
 
 resource "aws_eip" "bastion" {
   domain = "vpc"
-  # depends_on = [data.terraform_remote_state.layer1.outputs.igw]
 
   tags = merge(
     local.common_tags,

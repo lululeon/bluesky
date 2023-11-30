@@ -55,7 +55,6 @@ resource "aws_security_group" "web_server" {
 
 resource "aws_eip" "web_server" {
   domain = "vpc"
-  # depends_on = [data.terraform_remote_state.layer1.outputs.igw]
 
   tags = merge(
     local.common_tags,
