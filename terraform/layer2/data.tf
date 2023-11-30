@@ -26,13 +26,11 @@ data "aws_ami" "ubuntu" {
 }
 
 data "terraform_remote_state" "layer1" {
-  backend = "remote"
-
+  backend = "s3"
   config = {
-    bucket         = var.bucket
-    key            = local.bucket_key
-    region         = local.region
-    encrypt        = true
-    dynamodb_table = local.dynamodb
+    encrypt = true
+    key     = local.bucket_key
+    bucket  = local.bucket
+    region  = local.region
   }
 }

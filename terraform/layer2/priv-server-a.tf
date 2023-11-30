@@ -3,7 +3,7 @@
 resource "aws_security_group" "allow_ssh" {
   name        = "allow_ssh"
   description = "Allow ssh inbound traffic"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = data.terraform_remote_state.layer1.outputs.vpc_id
 
   # allow from public_a only
   ingress {
@@ -11,7 +11,7 @@ resource "aws_security_group" "allow_ssh" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [aws_vpc.main.cidr_block]
+    cidr_blocks = data.terraform_remote_state.layer1.outputs.public_cidrs
   }
 
   egress {
@@ -28,7 +28,7 @@ resource "aws_security_group" "allow_ssh" {
 }
 
 resource "aws_network_interface" "ubuntu_nic_a" {
-  subnet_id       = aws_subnet.private[0].id
+  subnet_id       = data.terraform_remote_state.layer1.outputs.private_subnet0_id
   security_groups = [aws_security_group.allow_ssh.id]
 
   tags = merge(

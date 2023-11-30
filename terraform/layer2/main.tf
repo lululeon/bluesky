@@ -20,11 +20,11 @@ provider "aws" {
 
 locals {
   # layer 1 remote state refs
+  region     = var.region
   bucket     = var.bucket
   bucket_key = "${var.bucket_key}-layer1"
   dynamodb   = var.dynamodb
 
-  region      = data.terraform_remote_state.layer1.outputs.region
   own_ip      = data.terraform_remote_state.layer1.outputs.own_ip
   prefix      = data.terraform_remote_state.layer1.outputs.prefix
   common_tags = data.terraform_remote_state.layer1.outputs.common_tags

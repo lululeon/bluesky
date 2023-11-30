@@ -1,3 +1,9 @@
+variable "region" {
+  type     = string
+  default  = "us-east-1"
+  nullable = false
+}
+
 variable "bastion_keyname" {
   description = "name of keypair for login on public servers. Must be created in target region"
   type        = string
