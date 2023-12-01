@@ -15,6 +15,7 @@ _unused/
 **/*.tfvars
 **/*.tfstate
 **/*.tfstate.*
+**/*.lock.hcl
 crash.log
 override.tf
 override.tf.json
