@@ -30,7 +30,7 @@ data "terraform_remote_state" "layer1" {
   config = {
     encrypt = true
     key     = local.bucket_key_layer1
-    bucket  = var.bucket
-    region  = var.region
+    bucket  = local.bucket
+    region  = local.region
   }
 }

@@ -7,20 +7,36 @@ endif
 include .env
 export $(shell grep -v '^\#' .env | sed 's/=.*//')
 
-bucketKey=$(TFSTATE_BUCKET_KEY)
+bucketKey=$(TF_VAR_bucket_key)
 layerDir=terraform
 
 ifdef layer
 bucketKey:= ${bucketKey}-layer${layer}
 layerDir := ${layerDir}/layer${layer}
+else
+$(error "Please identify the target layer with 'layer=n'")
 endif
 
 # use the backend config file because variables are not allowed in backend block
 tf.init:
+ifeq ($(layer), 0)
 	terraform -chdir=${layerDir} init
+else
+	terraform -chdir=${layerDir} init -backend-config="bucket=${TF_VAR_bucket}" \
+	-backend-config="key=${bucketKey}" \
+	-backend-config="dynamodb_table=${TF_VAR_dynamodb}" \
+	-backend-config="region=${TF_VAR_region}"
+endif
 
 tf.init.migrate:
-	terraform -chdir=${layerDir} init -migrate-state
+ifeq ($(layer), 0)
+	terraform -chdir=${layerDir} init
+else
+	terraform -chdir=${layerDir} init -migrate-state -backend-config="bucket=${TF_VAR_bucket}" \
+	-backend-config="key=${bucketKey}" \
+	-backend-config="dynamodb_table=${TF_VAR_dynamodb}" \
+	-backend-config="region=${TF_VAR_region}" 
+endif
 
 tf.format:
 	terraform -chdir=${layerDir} fmt

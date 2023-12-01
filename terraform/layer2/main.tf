@@ -2,11 +2,7 @@ terraform {
   required_version = "1.6.0"
 
   backend "s3" {
-    encrypt        = true
-    bucket         = var.bucket
-    key            = local.bucket_key
-    region         = var.region
-    dynamodb_table = var.dynamodb
+    encrypt = true
   }
 
   required_providers {
@@ -25,11 +21,9 @@ provider "aws" {
 locals {
   # layer 1 remote state refs
   bucket_key_layer1 = "${var.bucket_key}-layer1"
+  bucket            = var.bucket
+  region            = var.region
 
-  # bucket key for current layer
-  bucket_key = "${var.bucket_key}-layer2"
-
-  region      = var.region
   ports       = var.image_ports
   own_ip      = data.terraform_remote_state.layer1.outputs.own_ip
   prefix      = data.terraform_remote_state.layer1.outputs.prefix
