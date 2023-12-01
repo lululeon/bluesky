@@ -1,6 +1,7 @@
 # general
 tmp/
 temp/
+_unused/
 
 # dotenv environment variables file
 .env
