@@ -6,39 +6,46 @@ It will also let you launch a containerized service on the `web_server` instance
 
 ![diagram of vpc](./diagrams/bluesky_vpc.png)
 
-Requirements:
+**Requirements:**
 
 - an AWS account (a terraform user) that has the necessary permissions to build infra
-- have followed the instructions to set up your encrypted [s3 backend](https://developer.hashicorp.com/terraform/language/settings/backends/s3) here
-- You have created an EC2 Key Pair for logging into your servers
+- You have created an EC2 Key Pair for logging into your servers (you can do this in the AWS console)
 
 ## Setup & Deploy
 
 <details>
   <summary>Expand for <b>LOCAL DEV SETUP</b> instructions </summary>
 
-:warning: All command are run from the project root directory.
+:warning: All commands are run from the project root directory.
+:warning: Infra is split into layers as follows:
+
+- **Layer 0** - S3+DynamoDB Backend Provisioning for Terraform State Management
+- **Layer 1** - VPC Network
+- **Layer 2** - EC2 Instances (the ubuntu server, web server and bastion host) <== These are mainly examples; feel free to fork the repo and rip out servers / replace servers.
+
+Therefore, if you want to use the provided `Makefile` to issue your terraform commands, suffix every command shown below with `layer=n`, where n is the nth layer. Eg `make tf:validate layer=2`. The alternative is to move into each layer folder and issue your terraform commands there and remember to cd back out when finished.
 
 ### After cloning this repo:
 
 - use `.env.example` template to create `.env` file
 - modify `.env` file with terraform user's credentials and other variables as needed
-- `make tf:init`
-  :point_up: if having trouble with creds, try clearing everything with `unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_SECURITY_TOKEN` and re-check you have right key names and values before continuing with debugging the issue.
-
-### Preparing to deploy:
-
-- `make tf.validate`
-- `make tf.format`
-- `make tf.plan`
-
-### Deployment
-
-- `make tf.apply`
+- Deploy **Layer 0** - e.g.:
+  - `make tf:init layer=0`
+    :point_up: if having trouble with creds, try clearing everything with `unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_SECURITY_TOKEN` and re-check you have right key names and values before continuing with debugging the issue.
+  - `make tf.format layer=0`
+  - `make tf.validate layer=0`
+  - `make tf.plan layer=0`
+  - `make tf.apply layer=0`
+- Deploy **Layer 1** - i.e. same sequence of commands as above, but replace suffix with `layer=1`
+- Deploy **Layer 2** - i.e. same sequence of commands as above, but replace suffix with `layer=2`
 
 ### Tear Down
 
-- `make tf.destroy`
+Reverse the sequence of deployments:
+
+- `make tf.destroy layer=2`
+- `make tf.destroy layer=1`
+- `make tf.destroy layer=0`
 
 </details>
 

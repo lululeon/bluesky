@@ -17,16 +17,10 @@ endif
 
 # use the backend config file because variables are not allowed in backend block
 tf.init:
-	terraform -chdir=${layerDir} init -backend-config="bucket=${TFSTATE_BUCKET}" \
-	-backend-config="key=${bucketKey}" \
-	-backend-config="dynamodb_table=${TFSTATE_DYNAMODB}" \
-	-backend-config="region=${TF_VAR_region}"
+	terraform -chdir=${layerDir} init
 
 tf.init.migrate:
-	terraform -chdir=${layerDir} init -migrate-state -backend-config="bucket=${TFSTATE_BUCKET}" \
-	-backend-config="key=${bucketKey}" \
-	-backend-config="dynamodb_table=${TFSTATE_DYNAMODB}" \
-	-backend-config="region=${TF_VAR_region}" 
+	terraform -chdir=${layerDir} init -migrate-state
 
 tf.format:
 	terraform -chdir=${layerDir} fmt

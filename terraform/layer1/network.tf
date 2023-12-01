@@ -17,7 +17,6 @@ resource "aws_vpc" "main" {
 }
 
 
-# impl public internet access
 resource "aws_internet_gateway" "main" {
   # lives in the vpc just created above
   vpc_id = aws_vpc.main.id

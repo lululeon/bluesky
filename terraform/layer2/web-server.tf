@@ -88,7 +88,7 @@ resource "aws_iam_instance_profile" "web_server" {
 resource "aws_instance" "web_server" {
   ami                  = data.aws_ami.amazon_linux.id
   instance_type        = "t2.nano"
-  user_data            = templatefile("./files/userdata-webserver.tftpl", { region = local.region, accountnum = local.accountnum, image = local.image })
+  user_data            = templatefile("./files/userdata-webserver.tftpl", { region = local.region, accountnum = local.accountnum, image = local.image, ports = local.ports })
   iam_instance_profile = aws_iam_instance_profile.web_server.name
 
   key_name  = local.pubkey

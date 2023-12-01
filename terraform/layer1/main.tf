@@ -2,7 +2,11 @@ terraform {
   required_version = "1.6.0"
 
   backend "s3" {
-    encrypt = true
+    encrypt        = true
+    bucket         = var.bucket
+    key            = local.bucket_key
+    region         = var.region
+    dynamodb_table = var.dynamodb
   }
 
   required_providers {
@@ -19,9 +23,9 @@ provider "aws" {
 
 
 locals {
+  bucket_key          = "${var.bucket_key}-layer1"
   prefix              = var.prefix
   project             = var.project
-  region              = var.region
   own_ip              = data.http.ip.response_body
   public_cidrs        = var.public_subnet_cidr_blocks
   private_cidrs       = var.private_subnet_cidr_blocks
