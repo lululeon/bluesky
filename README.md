@@ -1,8 +1,12 @@
 # :cloud: Blue Sky VPC
 
-This repo provisions a VPC with 2 public and 2 private subnets using an S3+Dynamodb Backend, with standard CIDRs, basic resource tagging and naming baked in for simplicity.
+This repo is an exampple infra deployment which provisions:
 
-It will also let you launch a containerized service on the `web_server` instance's public ip: all you need to do is plug in your aws account and an ECR docker image name for rapid prototyping.
+- an S3+Dynamodb Backend for terraform state management
+- a VPC with 2 public and 2 private subnets (just as an example) with standard CIDRs, basic resource tagging and naming baked in for simplicity
+- launches a containerized service on the `web_server` instance's public ip: all you need to do is plug in your aws account and an ECR docker image name for rapid prototyping.
+
+It is meant as a quick starting point - fork the repo and make it your own by modifying the configuration!
 
 ![diagram of vpc](./diagrams/bluesky_vpc.png)
 
@@ -45,14 +49,7 @@ Reverse the sequence of deployments:
 
 - `make tf.destroy layer=2`
 - `make tf.destroy layer=1`
-- `make tf.destroy layer=0`
-
-</details>
-
-<details>
-  <summary>Expand for <b>CI/CD PIPELINE</b> instructions </summary>
-
-(TODO...)
+- `make tf.destroy layer=0` <== only if you want to destroy the state backend as well.
 
 </details>
 
