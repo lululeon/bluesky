@@ -1,6 +1,7 @@
 # general
 tmp/
 temp/
+_unused/
 
 # dotenv environment variables file
 .env
@@ -14,6 +15,7 @@ temp/
 **/*.tfvars
 **/*.tfstate
 **/*.tfstate.*
+**/*.lock.hcl
 crash.log
 override.tf
 override.tf.json

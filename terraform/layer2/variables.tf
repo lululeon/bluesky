@@ -4,6 +4,21 @@ variable "region" {
   nullable = false
 }
 
+variable "bucket" {
+  type     = string
+  nullable = false
+}
+
+variable "bucket_key" {
+  type     = string
+  nullable = false
+}
+
+variable "dynamodb" {
+  type     = string
+  nullable = false
+}
+
 variable "bastion_keyname" {
   description = "name of keypair for login on public servers. Must be created in target region"
   type        = string
@@ -22,17 +37,8 @@ variable "image" {
   nullable    = false
 }
 
-variable "bucket" {
-  type     = string
-  nullable = false
-}
-
-variable "bucket_key" {
-  type     = string
-  nullable = false
-}
-
-variable "dynamodb" {
-  type     = string
-  nullable = false
+variable "image_ports" {
+  description = "the port mapping used by the service whose image is pulled from ECR. e.g. 80:8080"
+  type        = string
+  nullable    = false
 }

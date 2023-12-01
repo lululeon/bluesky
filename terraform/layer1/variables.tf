@@ -1,18 +1,31 @@
 variable "prefix" {
   type     = string
-  default  = "bsky"
   nullable = false
 }
 
 variable "project" {
   type     = string
-  default  = "BlueSky"
   nullable = false
 }
 
 variable "region" {
   type     = string
   default  = "us-east-1"
+  nullable = false
+}
+
+variable "bucket" {
+  type     = string
+  nullable = false
+}
+
+variable "bucket_key" {
+  type     = string
+  nullable = false
+}
+
+variable "dynamodb" {
+  type     = string
   nullable = false
 }
 

@@ -29,7 +29,7 @@ data "terraform_remote_state" "layer1" {
   backend = "s3"
   config = {
     encrypt = true
-    key     = local.bucket_key
+    key     = local.bucket_key_layer1
     bucket  = local.bucket
     region  = local.region
   }

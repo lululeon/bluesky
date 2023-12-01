@@ -14,17 +14,17 @@ terraform {
 }
 
 provider "aws" {
-  region = data.terraform_remote_state.layer1.outputs.region
+  region = var.region
 }
 
 
 locals {
   # layer 1 remote state refs
-  region     = var.region
-  bucket     = var.bucket
-  bucket_key = "${var.bucket_key}-layer1"
-  dynamodb   = var.dynamodb
+  bucket_key_layer1 = "${var.bucket_key}-layer1"
+  bucket            = var.bucket
+  region            = var.region
 
+  ports       = var.image_ports
   own_ip      = data.terraform_remote_state.layer1.outputs.own_ip
   prefix      = data.terraform_remote_state.layer1.outputs.prefix
   common_tags = data.terraform_remote_state.layer1.outputs.common_tags

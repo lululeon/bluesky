@@ -16,4 +16,4 @@ aws ecr get-login-password --region ${region} | docker login --username AWS --pa
 docker pull ${accountnum}.dkr.ecr.${region}.amazonaws.com/${image}
 
 # run the container - when pulled from ecr, the full image name includes the ecr repo path!
-docker run -p 80:8080 -d ${accountnum}.dkr.ecr.${region}.amazonaws.com/${image}
+docker run -p ${ports} -d ${accountnum}.dkr.ecr.${region}.amazonaws.com/${image}
